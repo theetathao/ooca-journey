@@ -62,6 +62,7 @@ main{container-type:inline-size}
   overflow:hidden;
   align-items:start;
   background:
+   linear-gradient(#8fbbef,#8fbbef) 0 0 / 100% var(--scene-top),
    linear-gradient(#8fbbef,transparent 12%) 0 var(--scene-top) / 100% var(--journey-height),
    radial-gradient(ellipse at 84% 8%,#fcf4e047,transparent 62%) 0 var(--scene-top) / 100% var(--journey-height),
    linear-gradient(#8fbbef,#e0f8f6 41.66%) 0 var(--scene-top) / 100% var(--journey-height) #fff;
@@ -70,18 +71,20 @@ main{container-type:inline-size}
  .viewport-edge{
   display:block;position:fixed;inset-inline:0;z-index:10;pointer-events:none;
  }
- .viewport-edge-top{top:0;height:var(--scene-top);background-color:#8fbbef}
+ .viewport-edge-top{top:0;height:0;z-index:0;background-color:#8fbbef}
  @supports (-webkit-touch-callout:none){
   body{--scene-top:max(env(safe-area-inset-top,0px),40px)}
-  /* Safari samples fixed elements at each edge. Keep the lower sample paint-free. */
+  /* Safari samples the edge colors without painting over the journey header. */
+  .viewport-edge{-webkit-background-clip:text;background-clip:text}
+  .viewport-edge-top{height:12px}
   .viewport-edge-bottom{
-   bottom:0;height:12px;background-color:#fff;-webkit-background-clip:text;background-clip:text;
+   bottom:0;height:12px;background-color:#fff;
   }
  }
  main[data-page="sky"]>.layer,main[data-page="clear"]>.layer,.fork-transition .forkSky{display:none}
  main .bar{left:6.153846%;right:6.153846%;top:0} main .progress{top:44px}
  main .actions{left:6.153846%;right:6.153846%;bottom:max(5.5%,calc(env(safe-area-inset-bottom,0px) + 12px))}
- main{width:min(84%,430px);margin:0 auto;overflow:visible;height:var(--journey-height);aspect-ratio:auto;background:transparent;clip-path:inset(0 calc((100% - 100vw) / 2) 0)}
+ main{width:min(84%,430px);z-index:1;margin:0 auto;overflow:visible;height:var(--journey-height);aspect-ratio:auto;background:transparent;clip-path:inset(0 calc((100% - 100vw) / 2) 0)}
  main>.layer,main>.sky-pan,main>.clear-terrain{left:50%;right:auto;width:100vw;translate:-50% 0}
  .fork-transition .forkSky,.fork-transition .forkTerrain{left:50%;width:100vw;translate:-50% 0}
  .creek-foreground{left:50%;right:auto;width:100vw;translate:-50% 0}
