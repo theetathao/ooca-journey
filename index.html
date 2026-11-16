@@ -142,16 +142,16 @@ function copy(title,...lines){return '<section class="copy"><h1 tabindex="-1">'+
 function button(label,id,style='primary'){return '<button class="'+style+'" id="'+id+'">'+label+'</button>';}
 function actions(...buttons){return '<div class="actions">'+buttons.join('')+'</div>';}
 function bind(id,fn){const el=document.getElementById(id);if(el)el.onclick=fn;}
-function gesture(el,accept){
+function gesture(el,accept,tap){
  let start=null;
  let moved=false;
- let suppressDragClick=false;
+ let suppressPointerClick=false;
 
  el.addEventListener('pointerdown',e=>{
   if(e.button!==0||!e.isPrimary)return;
   start=[e.clientX,e.clientY];
   moved=false;
-  suppressDragClick=false;
+  suppressPointerClick=false;
   el.setPointerCapture(e.pointerId);
  });
  el.addEventListener('pointermove',e=>{
@@ -172,14 +172,16 @@ function gesture(el,accept){
  el.addEventListener('pointerup',e=>{
   if(!start||!e.isPrimary)return;
   const dx=e.clientX-start[0],dy=e.clientY-start[1];
-  suppressDragClick=moved;
+  const dragged=moved;
+  suppressPointerClick=dragged||Boolean(tap);
   clear();
-  if(suppressDragClick)accept(e,dx,dy);
+  if(dragged)accept(e,dx,dy);
+  else tap?.();
  });
- // Suppress the click paired with a drag, even when the drop is rejected.
+ // Pointer gestures are resolved on release. Keep native keyboard clicks.
  el.addEventListener('click',e=>{
-  if(!suppressDragClick||e.detail===0)return;
-  suppressDragClick=false;
+  if(!suppressPointerClick||e.detail===0)return;
+  suppressPointerClick=false;
   e.stopImmediatePropagation();
  },true);
 }
@@ -271,7 +273,7 @@ function render(){
  bind('sky-next',()=>{const button=document.getElementById('sky-next');button.disabled=true;app.querySelector('.sky-camera').classList.add('reveal-clouds');});
  bind('creek-next',()=>{document.getElementById('creek-next').disabled=true;app.querySelector('.creek-intro').classList.add('creek-reveal');});
  bind('restart',restart);
- app.querySelectorAll('[data-stone]').forEach(el=>{const choose=()=>{const opening=app.querySelector('.opening');if(!opening||opening.dataset.phase!=='choices')return;stone=Number(el.dataset.stone);opening.dataset.phase='packing';openingTimer=setTimeout(()=>go('packed'),420);};el.onclick=choose;gesture(el,e=>{if(inside(e,'bag',15))choose();});});
+ app.querySelectorAll('[data-stone]').forEach(el=>{const choose=()=>{const opening=app.querySelector('.opening');if(!opening||opening.dataset.phase!=='choices')return;stone=Number(el.dataset.stone);opening.dataset.phase='packing';openingTimer=setTimeout(()=>go('packed'),420);};el.onclick=choose;gesture(el,e=>{if(inside(e,'bag',15))choose();},choose);});
  app.querySelectorAll('[data-cloud]').forEach(el=>{const remove=()=>{removed.add(Number(el.dataset.cloud));if(removed.size===5){go('clear');return;}el.disabled=true;el.classList.add('gone');el.setAttribute('aria-hidden','true');app.querySelector('[data-cloud]:enabled')?.focus({preventScroll:true});};el.addEventListener('keydown',e=>{
   if(!['ArrowLeft','ArrowRight'].includes(e.key))return;
   e.preventDefault();
@@ -289,7 +291,7 @@ function render(){
  app.querySelectorAll('[data-path]').forEach(el=>el.onclick=()=>choosePath(Number(el.dataset.path)));
  bind('unsure',()=>choosePath(3));
  const drop=document.getElementById('drop');
- if(drop){const place=()=>{placed=true;go('placed');};drop.onclick=place;gesture(drop,e=>{if(inside(e,'target',16))place();});}
+ if(drop){const place=()=>{placed=true;go('placed');};drop.onclick=place;gesture(drop,e=>{if(inside(e,'target',16))place();},place);}
 }
 document.getElementById('resume').onclick=()=>dialog.close();
 document.getElementById('leave').onclick=()=>{dialog.close();go('end');};
