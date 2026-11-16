@@ -141,7 +141,41 @@ function art(name,x,y,w,h){return assets[name]?'<img alt="" draggable="false" cl
 function copy(title,...lines){return '<section class="copy"><h1 tabindex="-1">'+title+'</h1>'+lines.map(t=>'<p>'+t+'</p>').join('')+'</section>';}
 function button(label,id,style='primary'){return '<button class="'+style+'" id="'+id+'">'+label+'</button>';}
 function actions(...buttons){return '<div class="actions">'+buttons.join('')+'</div>';}
-function bind(id,fn){const el=document.getElementById(id);if(el)el.onclick=fn;}
+function bind(id,fn){
+ const button=document.getElementById(id);
+ if(button)button.onclick=fn;
+}
+
+// A mobile tap can end without a compatibility click during a scene transition.
+let handledTouch=false;
+app.addEventListener('pointerdown',event=>{
+ if(event.isPrimary)handledTouch=false;
+},true);
+app.addEventListener('click',event=>{
+ if(!handledTouch||!event.isTrusted||event.detail===0)return;
+ handledTouch=false;
+ event.preventDefault();
+ event.stopImmediatePropagation();
+},true);
+
+function bindTouchButton(button){
+ let touchStart=null;
+ button.addEventListener('pointerdown',event=>{
+  if(event.pointerType!=='touch'||!event.isPrimary||event.button!==0)return;
+  touchStart={id:event.pointerId,x:event.clientX,y:event.clientY};
+ });
+ button.addEventListener('pointercancel',event=>{
+  if(touchStart?.id===event.pointerId)touchStart=null;
+ });
+ button.addEventListener('pointerup',event=>{
+  if(touchStart?.id!==event.pointerId)return;
+  const distance=Math.hypot(event.clientX-touchStart.x,event.clientY-touchStart.y);
+  touchStart=null;
+  if(distance>10||button.disabled||!button.onclick)return;
+  handledTouch=true;
+  button.click();
+ });
+}
 function gesture(el,accept,tap){
  let start=null;
  let moved=false;
@@ -236,6 +270,7 @@ function render(){
  case 'end':body+=copy('ขอบคุณที่เดินทางมาด้วยกันนะ 💚','บางครั้งการหยุดพัก ก็เป็นก้าวหนึ่งของการเดินทางเหมือนกันนะ')+actions(button('เริ่มเดินทางใหม่','restart'));break;
  }
  app.innerHTML=body;
+ app.querySelectorAll('.actions button,.path-controls button').forEach(bindTouchButton);
  const previous={intro:'welcome',stone:'welcome',packed:'intro',sky:stone===null?'intro':'packed',clear:stone===null?'intro':'packed',paths:'sky',branch:'sky',stream:'paths',placed:'paths',reflection:'stream'};
  bind('back',()=>{
   const destination=previous[page];
