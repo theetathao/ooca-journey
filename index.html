@@ -51,30 +51,25 @@ main{container-type:inline-size}
 </style>
 <style>
 @media (max-width:600px) and (orientation:portrait){
- /* Keep controls in the small viewport and let the backdrop reach Safari's toolbar. */
- html{background:#8fbbef;overflow:hidden}
+ /* Leave a white edge inside the visible viewport for the browser toolbar. */
+ html{background:#fff;overflow:hidden}
  body{
+  --scene-cut:calc(var(--journey-height) - 2px);
   height:var(--journey-height);
   height:100lvh;
   overflow:hidden;
   align-items:start;
   background:
-   linear-gradient(#8fbbef,transparent 12%),
-   radial-gradient(ellipse at 84% 8%,#fcf4e047,transparent 62%),
-   linear-gradient(#8fbbef,#e0f8f6 41.66%);
-  background-size:100% var(--journey-height);
+   linear-gradient(transparent var(--scene-cut),#fff var(--scene-cut)),
+   linear-gradient(#8fbbef,transparent 12%) 0 0 / 100% var(--journey-height),
+   radial-gradient(ellipse at 84% 8%,#fcf4e047,transparent 62%) 0 0 / 100% var(--journey-height),
+   linear-gradient(#8fbbef,#e0f8f6 41.66%) 0 0 / 100% var(--journey-height) #8fbbef;
   background-repeat:no-repeat;
-  background-color:#79ada9;
  }
  main[data-page="sky"]>.layer,main[data-page="clear"]>.layer,.fork-transition .forkSky{display:none}
- /* Extend the lower edge of the artwork into browser chrome without moving targets. */
- main>.layer,.sky-pan img,.clear-terrain img,
- .fork-transition :is(.forkTerrain,.singleRoad,.forkRoad),
- .creek-foreground .art,.summary-scene>img:first-child{-webkit-box-reflect:below 0}
-
  main .bar{left:6.153846%;right:6.153846%;top:env(safe-area-inset-top,0px)} main .progress{top:calc(env(safe-area-inset-top,0px) + 44px)}
  main .actions{left:6.153846%;right:6.153846%;bottom:max(5.5%,calc(env(safe-area-inset-bottom,0px) + 12px))}
- main{width:min(84%,430px);margin:0 auto;overflow:visible;height:var(--journey-height);aspect-ratio:auto;background:transparent}
+ main{width:min(84%,430px);margin:0 auto;overflow:visible;height:var(--journey-height);aspect-ratio:auto;background:transparent;clip-path:inset(0 calc((100% - 100vw) / 2) 2px)}
  main>.layer,main>.sky-pan,main>.clear-terrain{left:50%;right:auto;width:100vw;translate:-50% 0}
  .fork-transition .forkSky,.fork-transition .forkTerrain{left:50%;width:100vw;translate:-50% 0}
  .creek-foreground{left:50%;right:auto;width:100vw;translate:-50% 0}
