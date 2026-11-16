@@ -1,4 +1,4 @@
-<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" media="(max-width:600px) and (orientation:portrait)" content="#8fbbef"><title>สำรวจโลกในใจ · OOCA</title>
+<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>สำรวจโลกในใจ · OOCA</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#edf5f2;color:#272727;font-family:Prompt,Tahoma,"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}main{position:relative;margin:auto;width:min(100%,430px);height:calc(min(100vw,430px) * 844 / 390);overflow:hidden;background:#e0f8f6;isolation:isolate}button,a{font:inherit;cursor:pointer}button{border:0;background:none;color:inherit}button:focus-visible,a:focus-visible{outline:3px solid #215d62;outline-offset:3px}img{pointer-events:none;display:block}.layer{position:absolute;width:100%;height:100%;z-index:-1}.art{position:absolute;object-fit:contain}.bar{position:absolute;top:5%;left:5%;right:5%;display:flex;align-items:center;justify-content:space-between}.bar strong{font-size:20px}.bar button{min-width:44px;min-height:44px}.skip{color:#215d92;text-decoration:underline}.progress{position:absolute;top:10.78199%;left:0;right:0;padding:4px 6.153846%;display:flex;gap:4px;box-sizing:border-box}.progress i{height:6px;flex:1;border-radius:8px;background:#ffffffa8}.progress .filled{background:#79ada9}.copy{position:absolute;top:20%;left:6%;right:6%}h1{font-size:clamp(18px,5.4vw,24px);line-height:1.35;margin:0 0 10px}p{margin:0 0 8px;line-height:1.5;color:#465969;font-size:clamp(13px,3.8vw,16px)}.actions{position:absolute;bottom:5.5%;left:6%;right:6%;display:grid;gap:8px}.primary,.secondary{display:block;text-align:center;text-decoration:none;border-radius:100px;padding:10px 14px;min-height:42px;background:#00c4b3;color:#073e39}.secondary{background:#fff;color:#246b65}.choices{position:absolute;top:51%;left:6%;right:6%;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:stretch}.choices button{background:#ffffffdc;border-radius:16px;padding:10px 3px;font-size:14px;min-height:60px}.choices button img{width:62%;height:40px;object-fit:contain;margin:0 auto 4px}.gesture{touch-action:none;user-select:none}.dragging{opacity:.9;z-index:3}.clouds{top:46%;grid-template-columns:repeat(2,1fr);gap:14px}.clouds button{border-radius:50%;background:#fff;box-shadow:0 7px 0 #dce3f6;transition:opacity .2s}.clouds .gone{opacity:0;pointer-events:none}.target{position:absolute;left:39%;width:22%;height:8%;top:72%;border:2px dashed #277674;border-radius:50%;background:#ffffff50}.drop{position:absolute;top:57%;left:42%;width:16%;height:8%;padding:0}.drop img{width:100%}.summary{background:#fffdf5dd;border-radius:16px;padding:12px;margin-top:12px;display:grid;gap:7px}.summary div{display:flex;justify-content:space-between;gap:8px;font-size:clamp(12px,3.5vw,14px)}dialog{width:min(95%,390px);border:0;border-radius:22px;background:#f7fffc;padding:24px;color:inherit}dialog::backdrop{background:#1d363781}dialog button{width:100%;margin-top:8px}@media(max-width:340px){.bar strong{font-size:16px}.choices button{font-size:12px}}
 .choices button[data-stone]{background:transparent;border-radius:0;padding:0;min-height:48px}.choices button[data-stone] img{width:58%;height:auto;margin:0 auto}
@@ -51,25 +51,37 @@ main{container-type:inline-size}
 </style>
 <style>
 @media (max-width:600px) and (orientation:portrait){
- /* Leave a white edge inside the visible viewport for the browser toolbar. */
  html{background:#fff;overflow:hidden}
  body{
-  --scene-cut:calc(var(--journey-height) - 2px);
-  height:var(--journey-height);
-  height:100lvh;
+  --scene-top:env(safe-area-inset-top,0px);
+  --scene-end:calc(var(--scene-top) + var(--journey-height));
+  height:var(--scene-end);
+  height:max(100lvh,var(--scene-end));
+  padding-top:var(--scene-top);
   overflow:hidden;
   align-items:start;
   background:
-   linear-gradient(transparent var(--scene-cut),#fff var(--scene-cut)),
-   linear-gradient(#8fbbef,transparent 12%) 0 0 / 100% var(--journey-height),
-   radial-gradient(ellipse at 84% 8%,#fcf4e047,transparent 62%) 0 0 / 100% var(--journey-height),
-   linear-gradient(#8fbbef,#e0f8f6 41.66%) 0 0 / 100% var(--journey-height) #8fbbef;
+   linear-gradient(#8fbbef,transparent 12%) 0 var(--scene-top) / 100% var(--journey-height),
+   radial-gradient(ellipse at 84% 8%,#fcf4e047,transparent 62%) 0 var(--scene-top) / 100% var(--journey-height),
+   linear-gradient(#8fbbef,#e0f8f6 41.66%) 0 var(--scene-top) / 100% var(--journey-height) #fff;
   background-repeat:no-repeat;
  }
+ body::before{
+  content:"";position:fixed;inset:0 0 auto;height:var(--scene-top);
+  background-color:#8fbbef;pointer-events:none;
+ }
+ @supports (-webkit-touch-callout:none){
+  body{--scene-top:max(env(safe-area-inset-top,0px),40px)}
+  /* Give Safari a white fixed edge to sample without painting a strip over the scene. */
+  body::after{
+   content:"";position:fixed;inset:auto 0 0;height:12px;z-index:10;
+   background-color:#fff;-webkit-background-clip:text;background-clip:text;pointer-events:none;
+  }
+ }
  main[data-page="sky"]>.layer,main[data-page="clear"]>.layer,.fork-transition .forkSky{display:none}
- main .bar{left:6.153846%;right:6.153846%;top:env(safe-area-inset-top,0px)} main .progress{top:calc(env(safe-area-inset-top,0px) + 44px)}
+ main .bar{left:6.153846%;right:6.153846%;top:0} main .progress{top:44px}
  main .actions{left:6.153846%;right:6.153846%;bottom:max(5.5%,calc(env(safe-area-inset-bottom,0px) + 12px))}
- main{width:min(84%,430px);margin:0 auto;overflow:visible;height:var(--journey-height);aspect-ratio:auto;background:transparent;clip-path:inset(0 calc((100% - 100vw) / 2) 2px)}
+ main{width:min(84%,430px);margin:0 auto;overflow:visible;height:var(--journey-height);aspect-ratio:auto;background:transparent;clip-path:inset(0 calc((100% - 100vw) / 2) 0)}
  main>.layer,main>.sky-pan,main>.clear-terrain{left:50%;right:auto;width:100vw;translate:-50% 0}
  .fork-transition .forkSky,.fork-transition .forkTerrain{left:50%;width:100vw;translate:-50% 0}
  .creek-foreground{left:50%;right:auto;width:100vw;translate:-50% 0}
